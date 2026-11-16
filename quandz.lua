@@ -1,4 +1,3 @@
-local targetScript = [==[
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
@@ -445,10 +444,13 @@ task.spawn(function()
                     local shouldRemove = false
                     
                     if not item.target or not item.target.Parent then
+                        -- Vật thể đã bị game xóa (chuyển phòng)
                         shouldRemove = true
                     elseif item.target:IsDescendantOf(char) then
+                        -- Vật phẩm đã được nhặt vào người
                         shouldRemove = true
                     else
+                        -- Kiểm tra khoảng cách để tránh lag nếu game không xóa phòng cũ
                         local part = item.target:IsA("Model") and (item.target.PrimaryPart or item.target:FindFirstChildWhichIsA("BasePart")) or item.target:IsA("BasePart") and item.target
                         if part then
                             local dist = (root.Position - part.Position).Magnitude
@@ -468,43 +470,3 @@ task.spawn(function()
         end)
     end
 end)
-]==]
-
-local secretKey = "Quandz_Hub_Super_Secure_Key_2024_!@#%^&*()"
-
-local function xor_encrypt(text, key)
-    local result = {}
-    for i = 1, #text do
-        local charCode = string.byte(text, i)
-        local keyChar = string.byte(key, (i - 1) % #key + 1)
-        table.insert(result, string.char(bit32.bxor(charCode, keyChar)))
-    end
-    return table.concat(result)
-end
-
-local function toHex(text)
-    return (text:gsub('.', function(c)
-        return string.format('%02x', string.byte(c))
-    end))
-end
-
-local encrypted = xor_encrypt(targetScript, secretKey)
-local hexEncrypted = toHex(encrypted)
-
--- Chia nhỏ chuỗi Hex để tránh giới hạn độ dài
-local chunks = {}
-for i = 1, #hexEncrypted, 2000 do
-    table.insert(chunks, string.format('    "%s"', hexEncrypted:sub(i, i + 1999)))
-end
-local chunkString = table.concat(chunks, ",\n")
-
-local loader = string.format([[
-local _0x1 = {
-%s
-}
-local _0x2 = table.concat(_0x1)
-local _0x3 = "%s"
-local _0x4 = ""
-for _0x5 = 1, #_0x2, 2 do
-    local _0x6 = tonumber(_0x2:sub(_0x5, _0x5+1), 16)
-    local _0x7 = string.byte(_0x3, (math.floo
